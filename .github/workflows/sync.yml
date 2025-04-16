@@ -1,0 +1,26 @@
+name: Sync Fork with Upstream
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'  # Daily at 3 AM UTC
+  workflow_dispatch:      # Allows manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+      - name: Add upstream and fetch
+        run: |
+          git remote add upstream https://github.com/SmartCart-Hostra/SmartCart-Frontend.git
+          git fetch upstream
+          git checkout main
+          git merge upstream/main --allow-unrelated-histories || true
+          git push origin main
